@@ -18,6 +18,14 @@ spring:
       connection-timeout: 30000    # 30?
       auto-commit: true
 
+  batch:
+    job:
+      enabled: false # ?????? ?? ? ??? JOB ?? ?? ?? (false? ?? quartz? ?? ??)
+    jdbc:
+      initialize-schema: always  # or embedded, never, on
+      isolation-level-for-create: default
+  #      table-prefix: CUSTOM_
+
   jpa:
     hibernate:
       ddl-auto: create       # create, create-drop, update, validate, none
