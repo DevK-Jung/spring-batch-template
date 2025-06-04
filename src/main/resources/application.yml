@@ -1,0 +1,29 @@
+server:
+  port: 8099
+
+spring:
+  application:
+    name: batch-template
+  datasource:
+    url: jdbc:mysql://localhost:33063/testdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowMultiQueries=true
+    username: root
+    password: rootpass
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: BatchHikariCP
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 600000         # 10?
+      max-lifetime: 1800000        # 30?
+      connection-timeout: 30000    # 30?
+      auto-commit: true
+
+  jpa:
+    hibernate:
+      ddl-auto: create       # create, create-drop, update, validate, none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        highlight_sql: false  # Hibernate 6 ???
