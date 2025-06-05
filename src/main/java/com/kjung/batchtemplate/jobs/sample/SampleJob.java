@@ -18,6 +18,8 @@ import java.util.stream.IntStream;
 @Configuration
 public class SampleJob extends AbstractJobConfig {
 
+    public static final String JOB_NAME = "testJob";
+
     public SampleJob(JobRepository jobRepository,
                      PlatformTransactionManager transactionManager) {
 
@@ -26,7 +28,7 @@ public class SampleJob extends AbstractJobConfig {
 
     @Bean
     public Job testJob() {
-        return new JobBuilder("testJob", jobRepository)
+        return new JobBuilder(JOB_NAME, jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .build();

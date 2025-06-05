@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
@@ -48,8 +47,6 @@ public class QuartzBatchJobRegistrar {
 
     private final QuartzJobProperties quartzJobProperties;
 
-    private final ApplicationContext applicationContext;
-
     /**
      * 애플리케이션 초기화 시점에 Quartz Job 등록을 수행합니다.
      * 설정된 Job들 중 registered=true인 Job만 대상으로 등록합니다.
@@ -57,8 +54,6 @@ public class QuartzBatchJobRegistrar {
     @PostConstruct
     public void init() {
         try {
-
-            registerSpringBatchJobsToSchedulerContext();
 
             scheduler.getListenerManager().addJobListener(new QuartzJobMonitoringListener());
 
@@ -86,20 +81,6 @@ public class QuartzBatchJobRegistrar {
             log.error("Quartz initialization failed", e);
             throw new IllegalStateException("Quartz initialization failed", e); // 반드시 전체 실패인 경우 예외 던짐
         }
-    }
-
-    private void registerSpringBatchJobsToSchedulerContext() {
-        Map<String, org.springframework.batch.core.Job> batchJobs =
-                applicationContext.getBeansOfType(org.springframework.batch.core.Job.class);
-
-        batchJobs.forEach((name, job) -> {
-            try {
-                scheduler.getContext().put(name, job);
-                log.info("Registered batch job '{}' to scheduler context", name);
-            } catch (SchedulerException e) {
-                log.error("Failed to put job '{}' into scheduler context", name, e);
-            }
-        });
     }
 
     /**
