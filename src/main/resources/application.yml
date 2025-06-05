@@ -51,3 +51,27 @@ management:
     web:
       exposure:
         include: health,metrics
+
+# swagger
+springdoc:
+  packages-to-scan: com.kjung.batchtemplate.api
+  paths-to-match: /api/**
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+    info:
+      enabled: true
+      title: Spring Batch Template
+      description: Spring Batch + Quartz Template
+      version: 1.0.0
+      contact:
+        name: KIM JUNG HYEON
+        email: dev.kjung@gmail.com
+      license:
+        name: Apache 2.0
+        url: https://www.apache.org/licenses/LICENSE-2.0.html
+      jwt-header-enabled: false
