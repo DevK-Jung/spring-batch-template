@@ -26,6 +26,16 @@ spring:
       isolation-level-for-create: default
   #      table-prefix: CUSTOM_
 
+  quartz:
+    job-store-type: jdbc  # memory, jdbc
+    scheduler-name: BatchQuartzScheduler
+    wait-for-jobs-to-complete-on-shutdown: true
+    overwrite-existing-jobs: true
+    jdbc:
+      initialize-schema: always
+  #    jdbc:
+  #      comment-prefix:
+
   jpa:
     hibernate:
       ddl-auto: create       # create, create-drop, update, validate, none
