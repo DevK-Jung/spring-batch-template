@@ -72,7 +72,7 @@
 
 ### 2. 애플리케이션 실행
 ```bash
-java -jar build/libs/batchtemplate-0.0.1-SNAPSHOT.jar
+java -jar build/libs/batch-template-0.0.1-SNAPSHOT.jar
 ```
 
 ### 3. REST API 실행
