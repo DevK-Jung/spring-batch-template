@@ -45,3 +45,9 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.MySQL8Dialect
         highlight_sql: false  # Hibernate 6 ???
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
