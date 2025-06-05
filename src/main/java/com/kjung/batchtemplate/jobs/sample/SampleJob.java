@@ -1,20 +1,28 @@
 package com.kjung.batchtemplate.jobs.sample;
 
-import com.kjung.batchtemplate.core.config.AbstractJobConfig;
+import com.kjung.batchtemplate.core.base.AbstractJobConfig;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.stream.IntStream;
 
 @Configuration
 public class SampleJob extends AbstractJobConfig {
+
+    public SampleJob(JobRepository jobRepository,
+                     PlatformTransactionManager transactionManager) {
+
+        super(jobRepository, transactionManager);
+    }
 
     @Bean
     public Job testJob() {
