@@ -54,33 +54,53 @@ public class QuartzBatchJobRegistrar {
     @PostConstruct
     public void init() {
         try {
-
             scheduler.getListenerManager().addJobListener(new QuartzJobMonitoringListener());
 
-            List<QuartzJobProperties.JobDetailProperties> activeJobs = getRegisteredJobs();
+            removeUnregisteredJobs();
 
-            int successCount = 0;
-            int failureCount = 0;
-
-            for (QuartzJobProperties.JobDetailProperties job : activeJobs) {
-                try {
-                    registerJob(job);
-                    successCount++;
-                } catch (SchedulerException e) {
-                    failureCount++;
-                    log.error("Failed to register job: {}", job.getName(), e);
-                }
-            }
-
-            if (activeJobs.size() == failureCount)
-                throw new IllegalStateException("All Quartz jobs failed to register. Check configuration or job definitions.");
-
-            log.warn("Quartz job registration completed with {} success / {} failure(s).", successCount, failureCount);
+            registerActiveJobs();
 
         } catch (SchedulerException e) {
             log.error("Quartz initialization failed", e);
-            throw new IllegalStateException("Quartz initialization failed", e); // 반드시 전체 실패인 경우 예외 던짐
+            throw new IllegalStateException("Quartz initialization failed", e);
         }
+    }
+
+    private void removeUnregisteredJobs() throws SchedulerException {
+        List<QuartzJobProperties.JobDetailProperties> unregisteredJobs = quartzJobProperties.getJobs().stream()
+                .filter(job -> !job.isRegistered())
+                .toList();
+
+        for (QuartzJobProperties.JobDetailProperties job : unregisteredJobs) {
+            JobKey jobKey = new JobKey(job.getName(), BATCH_GROUP);
+            if (scheduler.checkExists(jobKey)) {
+                scheduler.deleteJob(jobKey);
+                log.info("Deleted unregistered job: {}", job.getName());
+            }
+        }
+    }
+
+    private void registerActiveJobs() {
+        List<QuartzJobProperties.JobDetailProperties> activeJobs = getRegisteredJobs();
+
+        int successCount = 0;
+        int failureCount = 0;
+
+        for (QuartzJobProperties.JobDetailProperties job : activeJobs) {
+            try {
+                registerJob(job);
+                successCount++;
+            } catch (SchedulerException e) {
+                failureCount++;
+                log.error("Failed to register job: {}", job.getName(), e);
+            }
+        }
+
+        log.warn("Quartz job registration completed with {} success / {} failure(s).", successCount, failureCount);
+
+//    if (activeJobs.size() == failureCount) {
+//        throw new IllegalStateException("All Quartz jobs failed to register. Check configuration or job definitions.");
+//    }
     }
 
     /**
