@@ -9,6 +9,8 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
+
 /**
  * Quartz에서 트리거된 작업을 통해 Spring Batch Job을 실행하는 Quartz Job 구현체입니다.
  *
@@ -59,13 +61,37 @@ public class QuartzBatchJobExecutor implements Job {
      * Quartz JobDataMap을 Spring Batch JobParameters로 변환합니다.
      */
     private JobParameters buildJobParameters(JobDataMap jobDataMap) {
+        Map<String, Object> map = new HashMap<>(jobDataMap);
+        map.remove(QuartzBatchJobRegistrar.JOB_NAME);
+
+        map.put("uuid", UUID.randomUUID().toString()); // 재실행을 위한 고유 파라미터
+
+        return getJobParametersFromJobMap(map);
+    }
+
+    private JobParameters getJobParametersFromJobMap(Map<String, Object> jobDataMap) {
+
         JobParametersBuilder builder = new JobParametersBuilder();
 
-        jobDataMap.forEach((k, v) -> {
-            if (!QuartzBatchJobRegistrar.JOB_NAME.equals(k)) {
-                builder.addString(k, v.toString());
+        for (Map.Entry<String, Object> entry : jobDataMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                builder.addString(key, value.toString());
+            } else if (value instanceof Float || value instanceof Double) {
+                builder.addDouble(key, ((Number) value).doubleValue());
+            } else if (value instanceof Integer || value instanceof Long) {
+                builder.addLong(key, ((Number) value).longValue());
+            } else if (value instanceof Date) {
+                builder.addDate(key, (Date) value);
+            } else if (value instanceof LinkedHashMap<?, ?> map) {
+                builder.addJobParameter(key, new ArrayList<>(map.values()), List.class);
+            } else if (value instanceof ArrayList<?> list) {
+                builder.addJobParameter(key, list, List.class);
+            } else {
+                builder.addJobParameter(key, value, Object.class);
             }
-        });
+        }
 
         return builder.toJobParameters();
     }

@@ -13,14 +13,14 @@ spring:
       pool-name: BatchHikariCP
       maximum-pool-size: 10
       minimum-idle: 5
-      idle-timeout: 600000         # 10?
-      max-lifetime: 1800000        # 30?
-      connection-timeout: 30000    # 30?
+      idle-timeout: 600000         # 10분
+      max-lifetime: 1800000        # 30분
+      connection-timeout: 30000    # 30초
       auto-commit: true
 
   batch:
     job:
-      enabled: true # ?????? ?? ? ??? JOB ?? ?? ?? (false? ?? quartz? ?? ??)
+      enabled: false # 등록된 JOB 실행 여부 (false일 경우 quartz와 같은 도구 활용해 실행)
     jdbc:
       initialize-schema: always  # or embedded, never, on
       isolation-level-for-create: default
