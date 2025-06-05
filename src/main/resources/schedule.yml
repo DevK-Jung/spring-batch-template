@@ -1,0 +1,9 @@
+spring:
+  quartz:
+    jobs:
+      - name: testJob
+        description: "테스트 JOB"
+        cron: "*/10 * * * * ?"
+        registered: true
+        params:
+          isFullLoad: false
