@@ -118,9 +118,10 @@ public class QuartzBatchJobRegistrar {
     private void registerJob(QuartzJobProperties.JobDetailProperties job) throws SchedulerException {
         String name = job.getName();
         String cron = job.getCron();
+        String description = job.getDescription();
         Map<String, Object> params = job.getParams();
 
-        JobDetail jobDetail = buildJobDetail(name, cron, params);
+        JobDetail jobDetail = buildJobDetail(name, description, params);
 
         Trigger trigger = buildCronTrigger(name, cron);
 
